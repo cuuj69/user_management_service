@@ -306,39 +306,57 @@ src/
 │   │   └── com/tech11/usermanagement/
 │   │       ├── entity/
 │   │       │   └── User.java
+│   │       ├── data/
+│   │       │   ├── ApiResponse.java
+│   │       │   ├── PaginatedResponse.java
+│   │       │   └── extensions/
 │   │       ├── dto/
-│   │       │   ├── UserDto.java
-│   │       │   ├── CreateUserRequest.java
-│   │       │   ├── UpdateUserRequest.java
-│   │       │   ├── ResetPasswordRequest.java
-│   │       │   └── PaginatedResponse.java
-│   │       ├── dao/
-│   │       │   ├── UserDao.java
-│   │       │   └── UserDaoImpl.java
+│   │       │   ├── request/
+│   │       │   │   ├── CreateUserRequest.java
+│   │       │   │   ├── UpdateUserRequest.java
+│   │       │   │   └── ResetPasswordRequest.java
+│   │       │   └── response/
+│   │       │       └── UserResponse.java
+│   │       ├── repository/
+│   │       │   └── UserRepository.java
 │   │       ├── service/
-│   │       │   ├── UserService.java
-│   │       │   └── UserServiceImpl.java
+│   │       │   └── UserService.java
 │   │       ├── resource/
 │   │       │   └── UserResource.java
+│   │       ├── validators/
+│   │       │   ├── CreateUserRequestValidator.java
+│   │       │   ├── UpdateUserRequestValidator.java
+│   │       │   └── ResetPasswordRequestValidator.java
 │   │       └── UserManagementApplication.java
 │   ├── resources/
 │   │   └── META-INF/
-│   │       └── persistence.xml
+│   │       ├── persistence.xml
+│   │       └── microprofile-config.properties
+│   ├── liberty/
+│   │   └── config/
+│   │       └── server.xml
 │   └── webapp/
 │       └── WEB-INF/
 │           └── beans.xml
 ├── test/
 │   ├── java/
 │   │   └── com/tech11/usermanagement/
-│   │       ├── service/
+│   │       ├── services/
 │   │       │   └── UserServiceTest.java
 │   │       └── resource/
 │   │           └── UserResourceIntegrationTest.java
 │   └── resources/
 │       └── arquillian.xml
-└── main/liberty/config/
-    └── server.xml
 ```
+
+### Key Changes from Original Structure:
+
+- **Removed DAO layer** - Replaced with JPA Repository pattern
+- **Restructured DTOs** - Separated into `request/` and `response/` packages
+- **Added Data layer** - `ApiResponse` and `PaginatedResponse` moved to `data/` package
+- **Added Validators** - Custom validation classes for request DTOs
+- **Added Configuration** - `microprofile-config.properties` for application settings
+- **Updated Test structure** - Service tests moved to `services/` package
 
 ## 🔧 Configuration
 

@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.UUID;
 
 /**
  * REST resource for user management operations.
@@ -107,8 +108,8 @@ public class UserResource {
             )
     })
     public Response getUserById(
-            @Parameter(description = "User ID", example = "1")
-            @PathParam("id") Long id) {
+            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathParam("id") UUID id) {
 
         UserResponse user = userService.getUserById(id);
         return Response.ok(user).build();
@@ -168,8 +169,8 @@ public class UserResource {
             )
     })
     public Response updateUser(
-            @Parameter(description = "User ID", example = "1")
-            @PathParam("id") Long id,
+            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathParam("id") UUID id,
             @Parameter(description = "User update request", required = true)
             @Valid UpdateUserRequest request) {
 
@@ -202,8 +203,8 @@ public class UserResource {
             )
     })
     public Response resetPassword(
-            @Parameter(description = "User ID", example = "1")
-            @PathParam("id") Long id,
+            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathParam("id") UUID id,
             @Parameter(description = "Password reset request", required = true)
             @Valid ResetPasswordRequest request) {
 
@@ -228,8 +229,8 @@ public class UserResource {
             )
     })
     public Response deleteUser(
-            @Parameter(description = "User ID", example = "1")
-            @PathParam("id") Long id) {
+            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathParam("id") UUID id) {
 
         userService.deleteUser(id);
         return Response.noContent().build();

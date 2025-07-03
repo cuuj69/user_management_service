@@ -16,6 +16,7 @@ import jakarta.ws.rs.BadRequestException;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -70,7 +71,7 @@ public class UserService {
         return PaginatedResponse.of(userResponses, page, size, totalElements);
     }
 
-    public UserResponse getUserById(Long id) {
+    public UserResponse getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return convertToResponse(user);
@@ -93,7 +94,7 @@ public class UserService {
         return convertToResponse(savedUser);
     }
 
-    public UserResponse updateUser(Long id, UpdateUserRequest request) {
+    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
         // Validate the request
         updateUserValidator.validate(id, request);
 
@@ -118,7 +119,7 @@ public class UserService {
         return convertToResponse(updatedUser);
     }
 
-    public UserResponse resetPassword(Long id, ResetPasswordRequest request) {
+    public UserResponse resetPassword(UUID id, ResetPasswordRequest request) {
         // Validate the request
         resetPasswordValidator.validate(request);
 
@@ -132,7 +133,7 @@ public class UserService {
         return convertToResponse(updatedUser);
     }
 
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         boolean deleted = userRepository.deleteById(id);
         if (!deleted) {
             throw new NotFoundException("User not found with id: " + id);

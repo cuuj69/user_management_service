@@ -5,13 +5,14 @@ import com.tech11.usermanagement.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.BadRequestException;
+import java.util.UUID;
 
 @ApplicationScoped
 public class UpdateUserRequestValidator {
     @Inject
     UserRepository userRepository;
 
-    public void validate(Long id, UpdateUserRequest request) {
+    public void validate(UUID id, UpdateUserRequest request) {
         if (request == null) {
             throw new BadRequestException("Request cannot be null");
         }

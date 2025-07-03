@@ -4,12 +4,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Schema(description = "User response object")
 public class UserResponse {
 
-    @Schema(description = "User ID", example = "1")
-    private Long id;
+    @Schema(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
+    private UUID id;
 
     @Schema(description = "User's first name", example = "John")
     private String firstName;
@@ -36,7 +37,7 @@ public class UserResponse {
     public UserResponse() {}
 
     // Constructor with all fields
-    public UserResponse(Long id, String firstName, String lastName, String email, 
+    public UserResponse(UUID id, String firstName, String lastName, String email, 
                        LocalDate birthday, LocalDateTime createdAt, LocalDateTime updatedAt, Long version) {
         this.id = id;
         this.firstName = firstName;
@@ -49,11 +50,11 @@ public class UserResponse {
     }
 
     // Getters and Setters
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 

@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Repository interface for User entity operations.
@@ -29,10 +30,17 @@ public class UserRepository {
     private void initializeTableIfNeeded() {
         if (!tableInitialized) {
             try {
-                // Try to create the table if it doesn't exist
+                // Drop existing table if it exists (for schema migration)
+                try {
+                    entityManager.createNativeQuery("DROP TABLE IF EXISTS users").executeUpdate();
+                } catch (Exception e) {
+                    // Ignore errors
+                }
+                
+                // Create the table with UUID
                 entityManager.createNativeQuery(
-                    "CREATE TABLE IF NOT EXISTS users (" +
-                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "CREATE TABLE users (" +
+                    "id UUID PRIMARY KEY, " +
                     "first_name VARCHAR(255) NOT NULL, " +
                     "last_name VARCHAR(255) NOT NULL, " +
                     "email VARCHAR(255) NOT NULL UNIQUE, " +
@@ -44,12 +52,6 @@ public class UserRepository {
                     ")"
                 ).executeUpdate();
                 
-                // Create sequence for ID generation
-                try {
-                    entityManager.createNativeQuery("CREATE SEQUENCE IF NOT EXISTS SEQ_GEN_IDENTITY").executeUpdate();
-                } catch (Exception e) {
-                    // Sequence might already exist
-                }
                 tableInitialized = true;
             } catch (Exception e) {
                 // Table might already exist, mark as initialized
@@ -96,7 +98,7 @@ public class UserRepository {
      * @param id the user ID
      * @return Optional containing the user if found
      */
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(UUID id) {
         User user = entityManager.find(User.class, id);
         return Optional.ofNullable(user);
     }
@@ -143,7 +145,7 @@ public class UserRepository {
      * @param id the user ID to delete
      * @return true if user was deleted, false if not found
      */
-    public boolean deleteById(Long id) {
+    public boolean deleteById(UUID id) {
         Optional<User> userOpt = findById(id);
         if (userOpt.isPresent()) {
             entityManager.remove(userOpt.get());
@@ -173,7 +175,7 @@ public class UserRepository {
      * @param excludeId the user ID to exclude from the check
      * @return true if user exists, false otherwise
      */
-    public boolean existsByEmailExceptId(String email, Long excludeId) {
+    public boolean existsByEmailExceptId(String email, UUID excludeId) {
         TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COUNT(u) FROM User u WHERE u.email = :email AND u.id != :excludeId", Long.class);
         query.setParameter("email", email);

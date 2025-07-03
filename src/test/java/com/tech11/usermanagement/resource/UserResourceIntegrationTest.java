@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserResourceIntegrationTest {
 
     private Client client;
-    private String apiUrl = "http://localhost:9080/api/users";
+    private String apiUrl = "http://localhost:9080/user-management/api/users";
 
     @BeforeEach
     void setUp() {

@@ -2,6 +2,9 @@ package com.tech11.usermanagement.services;
 
 import com.tech11.usermanagement.repository.UserRepository;
 import com.tech11.usermanagement.service.UserService;
+import com.tech11.usermanagement.validators.CreateUserRequestValidator;
+import com.tech11.usermanagement.validators.UpdateUserRequestValidator;
+import com.tech11.usermanagement.validators.ResetPasswordRequestValidator;
 import com.tech11.usermanagement.data.PaginatedResponse;
 import com.tech11.usermanagement.dto.request.CreateUserRequest;
 import com.tech11.usermanagement.dto.request.ResetPasswordRequest;
@@ -32,6 +35,15 @@ class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private CreateUserRequestValidator createUserValidator;
+
+    @Mock
+    private UpdateUserRequestValidator updateUserValidator;
+
+    @Mock
+    private ResetPasswordRequestValidator resetPasswordValidator;
 
     @InjectMocks
     private UserService userService;
@@ -79,7 +91,7 @@ class UserServiceTest {
         when(userRepository.count()).thenReturn(1L);
 
         // Act
-        PaginatedResponse response = userService.getAllUsers(0, 10);
+        PaginatedResponse<UserResponse> response = userService.getAllUsers(null, null, null, 0, 10);
 
         // Assert
         assertNotNull(response);
@@ -125,7 +137,7 @@ class UserServiceTest {
     @Test
     void createUser_WhenValidRequest_ShouldCreateUser() {
         // Arrange
-        when(userRepository.existsByEmail(createRequest.getEmail())).thenReturn(false);
+        doNothing().when(createUserValidator).validate(createRequest);
         when(userRepository.save(any(User.class))).thenReturn(testUser);
 
         // Act
@@ -136,26 +148,26 @@ class UserServiceTest {
         assertEquals(testUser.getId(), result.getId());
         assertEquals(testUser.getFirstName(), result.getFirstName());
 
-        verify(userRepository).existsByEmail(createRequest.getEmail());
+        verify(createUserValidator).validate(createRequest);
         verify(userRepository).save(any(User.class));
     }
 
     @Test
     void createUser_WhenEmailAlreadyExists_ShouldThrowBadRequestException() {
         // Arrange
-        when(userRepository.existsByEmail(createRequest.getEmail())).thenReturn(true);
+        doThrow(new BadRequestException("Email already exists")).when(createUserValidator).validate(createRequest);
 
         // Act & Assert
         assertThrows(BadRequestException.class, () -> userService.createUser(createRequest));
-        verify(userRepository).existsByEmail(createRequest.getEmail());
+        verify(createUserValidator).validate(createRequest);
         verify(userRepository, never()).save(any(User.class));
     }
 
     @Test
     void updateUser_WhenUserExists_ShouldUpdateUser() {
         // Arrange
+        doNothing().when(updateUserValidator).validate(1L, updateRequest);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-        when(userRepository.existsByEmail(updateRequest.getEmail())).thenReturn(false);
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 
         // Act
@@ -165,8 +177,8 @@ class UserServiceTest {
         assertNotNull(result);
         assertEquals(testUser.getId(), result.getId());
 
+        verify(updateUserValidator).validate(1L, updateRequest);
         verify(userRepository).findById(1L);
-        verify(userRepository).existsByEmail(updateRequest.getEmail());
         verify(userRepository).update(any(User.class));
     }
 
@@ -184,19 +196,18 @@ class UserServiceTest {
     @Test
     void updateUser_WhenEmailAlreadyExists_ShouldThrowBadRequestException() {
         // Arrange
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-        when(userRepository.existsByEmail(updateRequest.getEmail())).thenReturn(true);
+        doThrow(new BadRequestException("Email already exists")).when(updateUserValidator).validate(1L, updateRequest);
 
         // Act & Assert
         assertThrows(BadRequestException.class, () -> userService.updateUser(1L, updateRequest));
-        verify(userRepository).findById(1L);
-        verify(userRepository).existsByEmail(updateRequest.getEmail());
+        verify(updateUserValidator).validate(1L, updateRequest);
         verify(userRepository, never()).update(any(User.class));
     }
 
     @Test
     void resetPassword_WhenUserExists_ShouldResetPassword() {
         // Arrange
+        doNothing().when(resetPasswordValidator).validate(resetPasswordRequest);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 

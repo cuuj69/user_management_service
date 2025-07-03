@@ -49,6 +49,8 @@ public class UserResource {
         return Response.ok().entity("{\"status\": \"healthy\", \"service\": \"user-management\"}").build();
     }
 
+
+
     @GET
     @Operation(
             summary = "Get all users",

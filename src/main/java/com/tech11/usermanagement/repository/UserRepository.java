@@ -20,6 +20,49 @@ public class UserRepository {
 
     @PersistenceContext
     private EntityManager entityManager;
+    
+    private boolean tableInitialized = false;
+    
+    /**
+     * Initialize the database table if it doesn't exist.
+     */
+    private void initializeTableIfNeeded() {
+        if (!tableInitialized) {
+            try {
+                // Try to create the table if it doesn't exist
+                entityManager.createNativeQuery(
+                    "CREATE TABLE IF NOT EXISTS users (" +
+                    "id BIGINT AUTO_INCREMENT PRIMARY KEY, " +
+                    "first_name VARCHAR(255) NOT NULL, " +
+                    "last_name VARCHAR(255) NOT NULL, " +
+                    "email VARCHAR(255) NOT NULL UNIQUE, " +
+                    "password VARCHAR(255) NOT NULL, " +
+                    "birthday DATE NOT NULL, " +
+                    "created_at TIMESTAMP NOT NULL, " +
+                    "updated_at TIMESTAMP, " +
+                    "version BIGINT DEFAULT 0" +
+                    ")"
+                ).executeUpdate();
+                
+                // Create sequence for ID generation
+                try {
+                    entityManager.createNativeQuery("CREATE SEQUENCE IF NOT EXISTS SEQ_GEN_IDENTITY").executeUpdate();
+                } catch (Exception e) {
+                    // Sequence might already exist
+                }
+                tableInitialized = true;
+            } catch (Exception e) {
+                // Table might already exist, mark as initialized
+                tableInitialized = true;
+            }
+        }
+    }
+    
+
+    
+
+    
+
 
     /**
      * Find all users with pagination.
@@ -116,6 +159,7 @@ public class UserRepository {
      * @return true if user exists, false otherwise
      */
     public boolean existsByEmail(String email) {
+        initializeTableIfNeeded();
         TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COUNT(u) FROM User u WHERE u.email = :email", Long.class);
         query.setParameter("email", email);

@@ -5,20 +5,19 @@
              https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
 
-    <persistence-unit name="UserManagementPU" transaction-type="JTA">
-        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>DefaultDataSource</jta-data-source>
+    <persistence-unit name="default" transaction-type="JTA">
+        <jta-data-source>jdbc/DefaultDataSource</jta-data-source>
         
+        <!-- Register entity classes -->
         <class>com.tech11.usermanagement.entity.User</class>
         
         <properties>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
-            <property name="hibernate.hbm2ddl.auto" value="create-drop" />
-            <property name="hibernate.show_sql" value="true" />
-            <property name="hibernate.format_sql" value="true" />
-            <property name="hibernate.enhancer.enableDirtyTracking" value="false" />
-            <property name="hibernate.enhancer.enableLazyInitialization" value="false" />
-            <property name="hibernate.enhancer.enableAssociationManagement" value="false" />
+            <!-- Jakarta EE standard schema generation -->
+            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
+            <property name="jakarta.persistence.schema-generation.create-source" value="metadata"/>
+            
+            <!-- Show SQL in logs -->
+            <property name="jakarta.persistence.logging.level" value="FINE"/>
         </properties>
     </persistence-unit>
 

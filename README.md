@@ -6,10 +6,6 @@ A RESTful user management service built with Java EE/Jakarta EE and Open Liberty
 
 This application implements a complete user management system with the following features:
 
-- **User Entity**: firstname, lastname, email, password, birthday
-- **RESTful API**: Full CRUD operations with JSON payloads
-- **Pagination**: Default page size of 10 with customizable parameters
-- **Validation**: Comprehensive input validation using Bean Validation
 - **Documentation**: Swagger/OpenAPI documentation
 - **Testing**: Unit tests and integration tests
 - **In-Memory Database**: H2 database for development and testing
@@ -361,26 +357,13 @@ Database configuration is in `src/main/resources/META-INF/persistence.xml`:
 - Hibernate as JPA provider
 - Automatic schema generation
 
-## 🛡️ Security Considerations
-
-**Note**: This is a demonstration application. In production:
-
-1. **Password Hashing**: Implement proper password hashing (BCrypt, PBKDF2)
-2. **Authentication**: Add JWT or session-based authentication
-3. **Authorization**: Implement role-based access control
-4. **Input Sanitization**: Add additional input validation
-5. **HTTPS**: Use HTTPS in production
-6. **Database Security**: Use a production-grade database with proper security
-
-## 📊 Business Analysis
-
 ### Technical Services Implemented
 
 1. **User Registration Service** - Complete user creation with validation
 2. **User Profile Management** - Update user information
 3. **Password Reset Service** - Secure password reset functionality
 4. **User Listing Service** - Paginated user listing
-5. **User Deletion Service** - Safe user removal
+5. **User Account Disabling Service** - Safe user account disabling 
 
 ### Additional Services (Stubs)
 
@@ -416,19 +399,10 @@ This project demonstrates:
 - **Error Handling**: Proper exception handling
 - **Validation**: Input validation at multiple layers
 
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 👨‍💻 Author
 
-Created for Tech11 Assessment - demonstrating Java EE/Jakarta EE expertise with modern development practices. 
+William Jefferson Mensah

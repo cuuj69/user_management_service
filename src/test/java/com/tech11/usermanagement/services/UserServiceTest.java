@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -48,6 +49,9 @@ class UserServiceTest {
     @InjectMocks
     private UserService userService;
 
+    private static final UUID TEST_USER_ID = UUID.randomUUID();
+    private static final UUID NON_EXISTENT_USER_ID = UUID.randomUUID();
+
     private User testUser;
     private UserResponse testUserResponse;
     private CreateUserRequest createRequest;
@@ -57,7 +61,7 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         testUser = new User("John", "Doe", "john.doe@example.com", "password123", LocalDate.of(1990, 1, 1));
-        testUser.setId(1L);
+        testUser.setId(TEST_USER_ID);
         testUser.setCreatedAt(LocalDateTime.now());
         testUser.setVersion(1L);
 
@@ -110,10 +114,10 @@ class UserServiceTest {
     @Test
     void getUserById_WhenUserExists_ShouldReturnUser() {
         // Arrange
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(testUser));
 
         // Act
-        UserResponse result = userService.getUserById(1L);
+        UserResponse result = userService.getUserById(TEST_USER_ID);
 
         // Assert
         assertNotNull(result);
@@ -121,17 +125,17 @@ class UserServiceTest {
         assertEquals(testUser.getFirstName(), result.getFirstName());
         assertEquals(testUser.getEmail(), result.getEmail());
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(TEST_USER_ID);
     }
 
     @Test
     void getUserById_WhenUserDoesNotExist_ShouldThrowNotFoundException() {
         // Arrange
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+        when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.getUserById(999L));
-        verify(userRepository).findById(999L);
+        assertThrows(NotFoundException.class, () -> userService.getUserById(NON_EXISTENT_USER_ID));
+        verify(userRepository).findById(NON_EXISTENT_USER_ID);
     }
 
     @Test
@@ -166,41 +170,41 @@ class UserServiceTest {
     @Test
     void updateUser_WhenUserExists_ShouldUpdateUser() {
         // Arrange
-        doNothing().when(updateUserValidator).validate(1L, updateRequest);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        doNothing().when(updateUserValidator).validate(TEST_USER_ID, updateRequest);
+        when(userRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(testUser));
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 
         // Act
-        UserResponse result = userService.updateUser(1L, updateRequest);
+        UserResponse result = userService.updateUser(TEST_USER_ID, updateRequest);
 
         // Assert
         assertNotNull(result);
         assertEquals(testUser.getId(), result.getId());
 
-        verify(updateUserValidator).validate(1L, updateRequest);
-        verify(userRepository).findById(1L);
+        verify(updateUserValidator).validate(TEST_USER_ID, updateRequest);
+        verify(userRepository).findById(TEST_USER_ID);
         verify(userRepository).update(any(User.class));
     }
 
     @Test
     void updateUser_WhenUserDoesNotExist_ShouldThrowNotFoundException() {
         // Arrange
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+        when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.updateUser(999L, updateRequest));
-        verify(userRepository).findById(999L);
+        assertThrows(NotFoundException.class, () -> userService.updateUser(NON_EXISTENT_USER_ID, updateRequest));
+        verify(userRepository).findById(NON_EXISTENT_USER_ID);
         verify(userRepository, never()).update(any(User.class));
     }
 
     @Test
     void updateUser_WhenEmailAlreadyExists_ShouldThrowBadRequestException() {
         // Arrange
-        doThrow(new BadRequestException("Email already exists")).when(updateUserValidator).validate(1L, updateRequest);
+        doThrow(new BadRequestException("Email already exists")).when(updateUserValidator).validate(TEST_USER_ID, updateRequest);
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> userService.updateUser(1L, updateRequest));
-        verify(updateUserValidator).validate(1L, updateRequest);
+        assertThrows(BadRequestException.class, () -> userService.updateUser(TEST_USER_ID, updateRequest));
+        verify(updateUserValidator).validate(TEST_USER_ID, updateRequest);
         verify(userRepository, never()).update(any(User.class));
     }
 
@@ -208,50 +212,50 @@ class UserServiceTest {
     void resetPassword_WhenUserExists_ShouldResetPassword() {
         // Arrange
         doNothing().when(resetPasswordValidator).validate(resetPasswordRequest);
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+        when(userRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(testUser));
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 
         // Act
-        UserResponse result = userService.resetPassword(1L, resetPasswordRequest);
+        UserResponse result = userService.resetPassword(TEST_USER_ID, resetPasswordRequest);
 
         // Assert
         assertNotNull(result);
         assertEquals(testUser.getId(), result.getId());
 
-        verify(userRepository).findById(1L);
+        verify(userRepository).findById(TEST_USER_ID);
         verify(userRepository).update(any(User.class));
     }
 
     @Test
     void resetPassword_WhenUserDoesNotExist_ShouldThrowNotFoundException() {
         // Arrange
-        when(userRepository.findById(999L)).thenReturn(Optional.empty());
+        when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.resetPassword(999L, resetPasswordRequest));
-        verify(userRepository).findById(999L);
+        assertThrows(NotFoundException.class, () -> userService.resetPassword(NON_EXISTENT_USER_ID, resetPasswordRequest));
+        verify(userRepository).findById(NON_EXISTENT_USER_ID);
         verify(userRepository, never()).update(any(User.class));
     }
 
     @Test
     void deleteUser_WhenUserExists_ShouldDeleteUser() {
         // Arrange
-        when(userRepository.deleteById(1L)).thenReturn(true);
+        when(userRepository.deleteById(TEST_USER_ID)).thenReturn(true);
 
         // Act
-        userService.deleteUser(1L);
+        userService.deleteUser(TEST_USER_ID);
 
         // Assert
-        verify(userRepository).deleteById(1L);
+        verify(userRepository).deleteById(TEST_USER_ID);
     }
 
     @Test
     void deleteUser_WhenUserDoesNotExist_ShouldThrowNotFoundException() {
         // Arrange
-        when(userRepository.deleteById(999L)).thenReturn(false);
+        when(userRepository.deleteById(NON_EXISTENT_USER_ID)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.deleteUser(999L));
-        verify(userRepository).deleteById(999L);
+        assertThrows(NotFoundException.class, () -> userService.deleteUser(NON_EXISTENT_USER_ID));
+        verify(userRepository).deleteById(NON_EXISTENT_USER_ID);
     }
 } 

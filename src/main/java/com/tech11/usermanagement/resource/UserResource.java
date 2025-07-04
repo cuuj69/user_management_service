@@ -6,11 +6,13 @@ import com.tech11.usermanagement.dto.request.CreateUserRequest;
 import com.tech11.usermanagement.dto.request.ResetPasswordRequest;
 import com.tech11.usermanagement.dto.request.UpdateUserRequest;
 import com.tech11.usermanagement.dto.response.UserResponse;
+import com.tech11.usermanagement.dto.response.ErrorResponse;
 import com.tech11.usermanagement.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -68,7 +70,21 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Invalid pagination parameters"
+                    description = "Invalid pagination parameters",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Invalid Page Number",
+                                            value = "{\"statusCode\": 400, \"message\": \"Page number must be non-negative\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Invalid Page Size",
+                                            value = "{\"statusCode\": 400, \"message\": \"Page size must be between 1 and 100\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    )
+                            }
+                    )
             )
     })
     public Response getAllUsers(
@@ -126,7 +142,17 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "User not found"
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "User Not Found",
+                                            value = "{\"statusCode\": 404, \"message\": \"User not found with id: 1234567890abcdef1234567890abcdef\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    )
+                            }
+                    )
             )
     })
     public Response getUserById(
@@ -163,7 +189,21 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Invalid request data or email already exists"
+                    description = "Validation failed or email already exists",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Email Already Exists",
+                                            value = "{\"statusCode\": 400, \"message\": \"Email already exists\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Validation Errors",
+                                            value = "{\"statusCode\": 400, \"message\": \"Validation failed\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": [{\"field\": \"email\", \"message\": \"Email must be a valid email address\", \"rejectedValue\": \"invalid-email\"}, {\"field\": \"firstName\", \"message\": \"First name is required\", \"rejectedValue\": \"\"}]}"
+                                    )
+                            }
+                    )
             )
     })
     public Response createUser(
@@ -203,11 +243,35 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Invalid request data or email already exists"
+                    description = "Validation failed or email already exists",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Email Already Exists",
+                                            value = "{\"statusCode\": 400, \"message\": \"Email already exists\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    ),
+                                    @ExampleObject(
+                                            name = "Validation Errors",
+                                            value = "{\"statusCode\": 400, \"message\": \"Validation failed\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": [{\"field\": \"email\", \"message\": \"Email must be a valid email address\", \"rejectedValue\": \"invalid-email\"}]}"
+                                    )
+                            }
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "User not found"
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "User Not Found",
+                                            value = "{\"statusCode\": 404, \"message\": \"User not found with id: 1234567890abcdef1234567890abcdef\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    )
+                            }
+                    )
             )
     })
     public Response updateUser(
@@ -247,11 +311,31 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Invalid password data"
+                    description = "Invalid password data",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "Password Validation Error",
+                                            value = "{\"statusCode\": 400, \"message\": \"Password validation failed\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": [{\"field\": \"newPassword\", \"message\": \"Password must be at least 8 characters long\", \"rejectedValue\": \"123\"}]}"
+                                    )
+                            }
+                    )
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "User not found"
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "User Not Found",
+                                            value = "{\"statusCode\": 404, \"message\": \"User not found with id: 1234567890abcdef1234567890abcdef\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    )
+                            }
+                    )
             )
     })
     public Response resetPassword(
@@ -287,7 +371,17 @@ public class UserResource {
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
-                    description = "User not found"
+                    description = "User not found",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(
+                                            name = "User Not Found",
+                                            value = "{\"statusCode\": 404, \"message\": \"User not found with id: 1234567890abcdef1234567890abcdef\", \"timestamp\": \"2025-07-04T12:00:00\", \"errors\": null}"
+                                    )
+                            }
+                    )
             )
     })
     public Response deleteUser(

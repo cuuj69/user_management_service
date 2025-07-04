@@ -1,6 +1,8 @@
 package com.tech11.usermanagement.entity;
 
 import jakarta.persistence.*;
+import jakarta.json.bind.annotation.JsonbProperty;
+import jakarta.json.bind.annotation.JsonbTransient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -12,6 +14,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(columnDefinition = "UUID")
+    @JsonbTransient
     private UUID id;
 
     @Column(name = "first_name", nullable = false)
@@ -55,8 +58,16 @@ public class User {
     }
 
     // Getters and Setters
-    public UUID getId() {
+    @JsonbTransient
+    public UUID getUuidId() {
         return id;
+    }
+
+    public String getId() {
+        if (id == null) {
+            return null;
+        }
+        return id.toString().replace("-", "");
     }
 
     public void setId(UUID id) {

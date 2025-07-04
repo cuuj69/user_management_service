@@ -71,8 +71,9 @@ public class UserService {
         return PaginatedResponse.of(userResponses, page, size, totalElements);
     }
 
-    public UserResponse getUserById(UUID id) {
-        User user = userRepository.findById(id)
+    public UserResponse getUserById(String id) {
+        UUID uuid = convertHexToUUID(id);
+        User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return convertToResponse(user);
     }
@@ -94,11 +95,12 @@ public class UserService {
         return convertToResponse(savedUser);
     }
 
-    public UserResponse updateUser(UUID id, UpdateUserRequest request) {
+    public UserResponse updateUser(String id, UpdateUserRequest request) {
         // Validate the request
-        updateUserValidator.validate(id, request);
+        UUID uuid = convertHexToUUID(id);
+        updateUserValidator.validate(uuid, request);
 
-        User user = userRepository.findById(id)
+        User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         // Update fields if provided
@@ -119,11 +121,12 @@ public class UserService {
         return convertToResponse(updatedUser);
     }
 
-    public UserResponse resetPassword(UUID id, ResetPasswordRequest request) {
+    public UserResponse resetPassword(String id, ResetPasswordRequest request) {
         // Validate the request
         resetPasswordValidator.validate(request);
 
-        User user = userRepository.findById(id)
+        UUID uuid = convertHexToUUID(id);
+        User user = userRepository.findById(uuid)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         // Update password (in a real application, this should be hashed)
@@ -133,8 +136,9 @@ public class UserService {
         return convertToResponse(updatedUser);
     }
 
-    public void deleteUser(UUID id) {
-        boolean deleted = userRepository.deleteById(id);
+    public void deleteUser(String id) {
+        UUID uuid = convertHexToUUID(id);
+        boolean deleted = userRepository.deleteById(uuid);
         if (!deleted) {
             throw new NotFoundException("User not found with id: " + id);
         }
@@ -157,5 +161,25 @@ public class UserService {
                 user.getUpdatedAt(),
                 user.getVersion()
         );
+    }
+
+    /**
+     * Convert hex string (without hyphens) to UUID.
+     *
+     * @param hexId the hex string ID
+     * @return UUID
+     */
+    private UUID convertHexToUUID(String hexId) {
+        if (hexId.length() != 32) {
+            throw new IllegalArgumentException("Invalid hex ID length: " + hexId.length());
+        }
+        
+        String uuidString = hexId.substring(0, 8) + "-" +
+                           hexId.substring(8, 12) + "-" +
+                           hexId.substring(12, 16) + "-" +
+                           hexId.substring(16, 20) + "-" +
+                           hexId.substring(20, 32);
+        
+        return UUID.fromString(uuidString);
     }
 } 

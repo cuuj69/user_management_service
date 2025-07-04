@@ -20,7 +20,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * REST resource for user management operations.
@@ -131,8 +130,8 @@ public class UserResource {
             )
     })
     public Response getUserById(
-            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
-            @PathParam("id") UUID id) {
+            @Parameter(description = "User ID", example = "550e8400e29b41d4a716446655440000")
+            @PathParam("id") String id) {
 
         long startTime = System.currentTimeMillis();
         UserResponse user = userService.getUserById(id);
@@ -200,8 +199,8 @@ public class UserResource {
             )
     })
     public Response updateUser(
-            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
-            @PathParam("id") UUID id,
+            @Parameter(description = "User ID", example = "550e8400e29b41d4a716446655440000")
+            @PathParam("id") String id,
             @Parameter(description = "User update request", required = true)
             @Valid UpdateUserRequest request) {
 
@@ -238,8 +237,8 @@ public class UserResource {
             )
     })
     public Response resetPassword(
-            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
-            @PathParam("id") UUID id,
+            @Parameter(description = "User ID", example = "550e8400e29b41d4a716446655440000")
+            @PathParam("id") String id,
             @Parameter(description = "Password reset request", required = true)
             @Valid ResetPasswordRequest request) {
 
@@ -268,8 +267,8 @@ public class UserResource {
             )
     })
     public Response deleteUser(
-            @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
-            @PathParam("id") UUID id) {
+            @Parameter(description = "User ID", example = "550e8400e29b41d4a716446655440000")
+            @PathParam("id") String id) {
 
         long startTime = System.currentTimeMillis();
         userService.deleteUser(id);

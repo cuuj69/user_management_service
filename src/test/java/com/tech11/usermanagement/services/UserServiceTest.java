@@ -51,6 +51,8 @@ class UserServiceTest {
 
     private static final UUID TEST_USER_ID = UUID.randomUUID();
     private static final UUID NON_EXISTENT_USER_ID = UUID.randomUUID();
+    private static final String TEST_USER_ID_STRING = TEST_USER_ID.toString().replace("-", "");
+    private static final String NON_EXISTENT_USER_ID_STRING = NON_EXISTENT_USER_ID.toString().replace("-", "");
 
     private User testUser;
     private UserResponse testUserResponse;
@@ -117,7 +119,7 @@ class UserServiceTest {
         when(userRepository.findById(TEST_USER_ID)).thenReturn(Optional.of(testUser));
 
         // Act
-        UserResponse result = userService.getUserById(TEST_USER_ID);
+        UserResponse result = userService.getUserById(TEST_USER_ID_STRING);
 
         // Assert
         assertNotNull(result);
@@ -134,7 +136,7 @@ class UserServiceTest {
         when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.getUserById(NON_EXISTENT_USER_ID));
+        assertThrows(NotFoundException.class, () -> userService.getUserById(NON_EXISTENT_USER_ID_STRING));
         verify(userRepository).findById(NON_EXISTENT_USER_ID);
     }
 
@@ -175,7 +177,7 @@ class UserServiceTest {
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 
         // Act
-        UserResponse result = userService.updateUser(TEST_USER_ID, updateRequest);
+        UserResponse result = userService.updateUser(TEST_USER_ID_STRING, updateRequest);
 
         // Assert
         assertNotNull(result);
@@ -192,7 +194,7 @@ class UserServiceTest {
         when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.updateUser(NON_EXISTENT_USER_ID, updateRequest));
+        assertThrows(NotFoundException.class, () -> userService.updateUser(NON_EXISTENT_USER_ID_STRING, updateRequest));
         verify(userRepository).findById(NON_EXISTENT_USER_ID);
         verify(userRepository, never()).update(any(User.class));
     }
@@ -203,7 +205,7 @@ class UserServiceTest {
         doThrow(new BadRequestException("Email already exists")).when(updateUserValidator).validate(TEST_USER_ID, updateRequest);
 
         // Act & Assert
-        assertThrows(BadRequestException.class, () -> userService.updateUser(TEST_USER_ID, updateRequest));
+        assertThrows(BadRequestException.class, () -> userService.updateUser(TEST_USER_ID_STRING, updateRequest));
         verify(updateUserValidator).validate(TEST_USER_ID, updateRequest);
         verify(userRepository, never()).update(any(User.class));
     }
@@ -216,7 +218,7 @@ class UserServiceTest {
         when(userRepository.update(any(User.class))).thenReturn(testUser);
 
         // Act
-        UserResponse result = userService.resetPassword(TEST_USER_ID, resetPasswordRequest);
+        UserResponse result = userService.resetPassword(TEST_USER_ID_STRING, resetPasswordRequest);
 
         // Assert
         assertNotNull(result);
@@ -232,7 +234,7 @@ class UserServiceTest {
         when(userRepository.findById(NON_EXISTENT_USER_ID)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.resetPassword(NON_EXISTENT_USER_ID, resetPasswordRequest));
+        assertThrows(NotFoundException.class, () -> userService.resetPassword(NON_EXISTENT_USER_ID_STRING, resetPasswordRequest));
         verify(userRepository).findById(NON_EXISTENT_USER_ID);
         verify(userRepository, never()).update(any(User.class));
     }
@@ -243,7 +245,7 @@ class UserServiceTest {
         when(userRepository.deleteById(TEST_USER_ID)).thenReturn(true);
 
         // Act
-        userService.deleteUser(TEST_USER_ID);
+        userService.deleteUser(TEST_USER_ID_STRING);
 
         // Assert
         verify(userRepository).deleteById(TEST_USER_ID);
@@ -255,7 +257,7 @@ class UserServiceTest {
         when(userRepository.deleteById(NON_EXISTENT_USER_ID)).thenReturn(false);
 
         // Act & Assert
-        assertThrows(NotFoundException.class, () -> userService.deleteUser(NON_EXISTENT_USER_ID));
+        assertThrows(NotFoundException.class, () -> userService.deleteUser(NON_EXISTENT_USER_ID_STRING));
         verify(userRepository).deleteById(NON_EXISTENT_USER_ID);
     }
 } 

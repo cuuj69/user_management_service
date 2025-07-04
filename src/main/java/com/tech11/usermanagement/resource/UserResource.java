@@ -1,5 +1,6 @@
 package com.tech11.usermanagement.resource;
 
+import com.tech11.usermanagement.data.ApiResponse;
 import com.tech11.usermanagement.data.PaginatedResponse;
 import com.tech11.usermanagement.dto.request.CreateUserRequest;
 import com.tech11.usermanagement.dto.request.ResetPasswordRequest;
@@ -11,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,7 +42,7 @@ public class UserResource {
             description = "Simple health check endpoint for monitoring"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Service is healthy"
             )
@@ -58,7 +59,7 @@ public class UserResource {
             description = "Retrieve a paginated list of users with optional search filters. You can search by firstName, lastName, or email using partial matching. Only one filter can be used at a time."
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Successfully retrieved users",
                     content = @Content(
@@ -66,7 +67,7 @@ public class UserResource {
                             schema = @Schema(implementation = PaginatedResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "Invalid pagination parameters"
             )
@@ -83,7 +84,29 @@ public class UserResource {
             @Parameter(description = "Page size", example = "10")
             @QueryParam("size") @DefaultValue("10") int size) {
 
-        PaginatedResponse<UserResponse> response = userService.getAllUsers(firstName, lastName, email, page, size);
+        long startTime = System.currentTimeMillis();
+        PaginatedResponse<UserResponse> paginatedData = userService.getAllUsers(firstName, lastName, email, page, size);
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        // Create custom response with just the user list data
+        ApiResponse<List<UserResponse>> response = new ApiResponse<>(
+            200, 
+            "Success (in " + processingTime + "ms)", 
+            paginatedData.getData(), 
+            processingTime
+        );
+        
+        // Override the default pageData with actual pagination info
+        ApiResponse.PageData pageData = new ApiResponse.PageData(
+            page + 1, // Convert to 1-based
+            size,
+            paginatedData.getTotalPages(),
+            paginatedData.getData().size(),
+            (int) paginatedData.getTotalElements()
+        );
+        
+        response.getData().setPageData(pageData);
+        
         return Response.ok(response).build();
     }
 
@@ -94,7 +117,7 @@ public class UserResource {
             description = "Retrieve a specific user by their ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Successfully retrieved user",
                     content = @Content(
@@ -102,7 +125,7 @@ public class UserResource {
                             schema = @Schema(implementation = UserResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "User not found"
             )
@@ -111,8 +134,12 @@ public class UserResource {
             @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
             @PathParam("id") UUID id) {
 
+        long startTime = System.currentTimeMillis();
         UserResponse user = userService.getUserById(id);
-        return Response.ok(user).build();
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        ApiResponse<UserResponse> response = ApiResponse.success(user, processingTime);
+        return Response.ok(response).build();
     }
 
     @POST
@@ -121,7 +148,7 @@ public class UserResource {
             description = "Create a new user with the provided information"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "201",
                     description = "User created successfully",
                     content = @Content(
@@ -129,7 +156,7 @@ public class UserResource {
                             schema = @Schema(implementation = UserResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "Invalid request data or email already exists"
             )
@@ -138,9 +165,13 @@ public class UserResource {
             @Parameter(description = "User creation request", required = true)
             @Valid CreateUserRequest request) {
 
+        long startTime = System.currentTimeMillis();
         UserResponse createdUser = userService.createUser(request);
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        ApiResponse<UserResponse> response = ApiResponse.created(createdUser, processingTime);
         return Response.status(Response.Status.CREATED)
-                .entity(createdUser)
+                .entity(response)
                 .build();
     }
 
@@ -151,7 +182,7 @@ public class UserResource {
             description = "Update an existing user's information"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "User updated successfully",
                     content = @Content(
@@ -159,11 +190,11 @@ public class UserResource {
                             schema = @Schema(implementation = UserResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "Invalid request data or email already exists"
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "User not found"
             )
@@ -174,8 +205,12 @@ public class UserResource {
             @Parameter(description = "User update request", required = true)
             @Valid UpdateUserRequest request) {
 
+        long startTime = System.currentTimeMillis();
         UserResponse updatedUser = userService.updateUser(id, request);
-        return Response.ok(updatedUser).build();
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        ApiResponse<UserResponse> response = ApiResponse.success(updatedUser, processingTime);
+        return Response.ok(response).build();
     }
 
     @PATCH
@@ -185,7 +220,7 @@ public class UserResource {
             description = "Reset the password for an existing user"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
                     description = "Password reset successfully",
                     content = @Content(
@@ -193,11 +228,11 @@ public class UserResource {
                             schema = @Schema(implementation = UserResponse.class)
                     )
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
                     description = "Invalid password data"
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "User not found"
             )
@@ -208,8 +243,12 @@ public class UserResource {
             @Parameter(description = "Password reset request", required = true)
             @Valid ResetPasswordRequest request) {
 
+        long startTime = System.currentTimeMillis();
         UserResponse updatedUser = userService.resetPassword(id, request);
-        return Response.ok(updatedUser).build();
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        ApiResponse<UserResponse> response = ApiResponse.success(updatedUser, processingTime);
+        return Response.ok(response).build();
     }
 
     @DELETE
@@ -219,11 +258,11 @@ public class UserResource {
             description = "Delete an existing user"
     )
     @ApiResponses(value = {
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "204",
                     description = "User deleted successfully"
             ),
-            @ApiResponse(
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "404",
                     description = "User not found"
             )
@@ -232,7 +271,13 @@ public class UserResource {
             @Parameter(description = "User ID", example = "550e8400-e29b-41d4-a716-446655440000")
             @PathParam("id") UUID id) {
 
+        long startTime = System.currentTimeMillis();
         userService.deleteUser(id);
-        return Response.noContent().build();
+        long processingTime = System.currentTimeMillis() - startTime;
+        
+        ApiResponse<Void> response = ApiResponse.noContent();
+        return Response.status(Response.Status.NO_CONTENT)
+                .entity(response)
+                .build();
     }
 } 

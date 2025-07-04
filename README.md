@@ -137,6 +137,70 @@ mvn verify
 mvn clean verify
 ```
 
+## Logging and Monitoring
+
+### Log Configuration
+
+The application uses Liberty's built-in logging with the following configuration:
+
+- **Log Level**: INFO (configurable in `src/main/liberty/config/server.xml`)
+- **Log Rotation**: 10MB max file size, keep 10 files
+- **Console Output**: Enabled for development
+- **Log Location**: `target/liberty/wlp/usr/servers/defaultServer/logs/`
+
+### Log Management Script
+
+A convenient script is provided to manage logs:
+
+```bash
+# Show help
+./logs.sh help
+
+# Follow logs in real-time
+./logs.sh tail
+
+# Show last 50 log messages
+./logs.sh messages
+
+# Show only error messages
+./logs.sh errors
+
+# Show only warning messages
+./logs.sh warnings
+
+# Show application-specific logs (our service logs)
+./logs.sh app
+
+# Show log file sizes
+./logs.sh size
+
+# Clear all log files
+./logs.sh clear
+```
+
+### Log Levels
+
+- **INFO**: Method entry, successful operations, field updates
+- **WARNING**: Validation failures, not found scenarios, bad requests
+- **SEVERE**: Unexpected exceptions with full stack traces
+
+### Example Log Output
+
+```
+[INFO] Creating new user with email: john.doe@example.com
+[INFO] Successfully created user with ID: e42e49eeb30a4944a501bb7e430c6df7
+[INFO] Updating user with ID: e42e49eeb30a4944a501bb7e430c6df7
+[INFO] Updating firstName for user: e42e49eeb30a4944a501bb7e430c6df7
+[WARNING] User not found with ID: invalid-id
+[SEVERE] Error creating user: Database connection failed
+```
+
+### Log Retention
+
+- **Development**: Logs are rotated automatically (10MB max, 10 files)
+- **Production**: Consider implementing external log aggregation (ELK stack, Splunk, etc.)
+- **Cleanup**: Use `./logs.sh clear` to clean up old logs when needed
+
 ## API Documentation
 
 ### Base URL

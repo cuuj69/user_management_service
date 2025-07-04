@@ -2,32 +2,12 @@ version: '3.8'
 
 services:
   user-management:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: user-management-api
+    build: .
     ports:
       - "9080:9080"
-      - "9443:9443"
-    env_file:
-      - .env
     environment:
-      - WLP_LOGGING_CONSOLE_LOGLEVEL=${WLP_LOGGING_CONSOLE_LOGLEVEL:-INFO}
-      - WLP_LOGGING_CONSOLE_FORMAT=${WLP_LOGGING_CONSOLE_FORMAT:-simple}
-      - JAVA_OPTS=${JAVA_OPTS:-}
-      - APP_ENV=${APP_ENV:-development}
-    volumes:
-      # Optional: Mount logs for debugging
-      - ./logs:/opt/ol/wlp/usr/servers/defaultServer/logs
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      - WLP_LOGGING_CONSOLE_LOGLEVEL=INFO
     restart: unless-stopped
-    networks:
-      - user-management-network
 
 networks:
   user-management-network:

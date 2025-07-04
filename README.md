@@ -101,16 +101,15 @@ mvn liberty:dev
 
 #### Option 2: Docker (Recommended)
 ```bash
-# Build and run with Docker Compose
-./docker-build.sh
+# Build and prepare for Docker
+./build-for-docker.sh
 
-# Or manually:
-docker-compose up -d
+# Run with Docker Compose
+docker-compose up --build
 
 # The application will be available at:
-# - Application: http://localhost:9080
-# - Swagger UI: http://localhost:9080/openapi/ui
-# - Health Check: http://localhost:9080/api/users/health
+# - Application: http://localhost:9080/user-management/api/users
+# - Health Check: http://localhost:9080/user-management/api/users/health
 ```
 
 #### Option 3: Production Docker

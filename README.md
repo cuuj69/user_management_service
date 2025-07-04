@@ -1,105 +1,155 @@
 # User Management Service - Tech11 Assessment
 
-A RESTful user management service built with Java EE/Jakarta EE and Open Liberty, demonstrating modern enterprise Java development practices.
+A comprehensive RESTful user management service built with Jakarta EE 10 and Open Liberty, featuring modern enterprise Java development practices, comprehensive error handling, logging, and scalable architecture.
 
-## Project Overview
+## 🎯 Project Overview
 
-This application implements a complete user management system with the following features:
+This application implements a complete user management system with enterprise-grade features:
 
-- **Documentation**: Swagger/OpenAPI documentation
-- **Testing**: Unit tests and integration tests
-- **In-Memory Database**: H2 database for development and testing
+- **🔐 Secure User Management**: CRUD operations with UUID-based IDs and validation
+- **📊 Standardized API Responses**: Consistent JSON format with pagination support
+- **🛡️ Comprehensive Validation**: Bean validation and business logic validation
+- **📝 Detailed Error Handling**: Structured error responses with validation messages
+- **📋 Comprehensive Logging**: Multi-level logging with rotation and management tools
+- **🔧 Service Stubs**: Ready-to-implement notification, audit, and email services
+- **🎭 Actor System**: Asynchronous message processing for scalability
+- **🚀 CI/CD Pipeline**: GitHub Actions with automated testing and deployment
+- **📚 API Documentation**: Swagger/OpenAPI with detailed examples
+- **🧪 Testing**: Unit tests with comprehensive coverage
+- **🐳 Containerization**: Docker support for easy deployment
 
-## Architecture
+## 🏗️ Architecture
 
-The application follows a layered architecture pattern:
+The application follows a modern layered architecture with actor-based asynchronous processing:
 
 ```
-┌─────────────────┐
-│   REST Layer    │  ← JAX-RS Resources
-├─────────────────┤
-│  Service Layer  │  ← Business Logic
-├─────────────────┤
-│   DAO Layer     │  ← Data Access
-├─────────────────┤
-│  Entity Layer   │  ← JPA Entities
-└─────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    REST API Layer                           │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │   UserResource  │  │  ErrorResponse  │  │  ApiResponse │ │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│                   Service Layer                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │   UserService   │  │  Notification   │  │  AuditService│ │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│                  Actor System                               │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │   UserActor     │  │  SystemActor    │  │  MessageBus  │ │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│                   Data Layer                                │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │ UserRepository  │  │     User        │  │ Validators   │ │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
+├─────────────────────────────────────────────────────────────┤
+│                  Infrastructure                             │
+│  ┌─────────────────┐  ┌─────────────────┐  ┌──────────────┐ │
+│  │   H2 Database   │  │  Open Liberty   │  │   Logging    │ │
+│  └─────────────────┘  └─────────────────┘  └──────────────┘ │
+└─────────────────────────────────────────────────────────────┘
 ```
+
+### Key Architectural Features
+
+- **🔄 Asynchronous Processing**: Actor system for non-blocking operations
+- **📨 Message-Driven**: Event-based communication between components
+- **🛡️ Validation Layers**: Multiple validation levels (Bean, Business, Custom)
+- **📊 Response Standardization**: Consistent API response format
+- **🔍 Comprehensive Logging**: Multi-level logging with rotation
+- **⚡ Error Handling**: Structured error responses with detailed messages
 
 ### Technology Stack
 
-- **Java 17** - Latest LTS version
-- **Jakarta EE 10** - Enterprise Java platform
-- **Open Liberty 23.0.0.12** - Application server
-- **JPA/Hibernate** - Object-relational mapping
-- **H2 Database** - In-memory database
-- **JUnit 5** - Unit testing
-- **Mockito** - Mocking framework
-- **Arquillian** - Integration testing
-- **Swagger/OpenAPI** - API documentation
-- **Maven** - Build tool
+#### Core Technologies
+- **Java 17** - Latest LTS version with modern features
+- **Jakarta EE 10** - Enterprise Java platform with CDI, JAX-RS, JPA
+- **Open Liberty 23.0.0.12** - Lightweight, fast application server
+- **JPA/EclipseLink** - Object-relational mapping with UUID support
+- **H2 Database** - In-memory database with automatic schema creation
 
-## Getting Started
+#### Development & Testing
+- **JUnit 5** - Modern unit testing framework
+- **Mockito** - Mocking framework for isolated testing
+- **Maven** - Build tool with dependency management
+- **Swagger/OpenAPI 3.1** - Interactive API documentation
+
+#### Validation & Security
+- **Bean Validation 3.0** - Declarative validation with custom constraints
+- **OWASP Dependency Check** - Security vulnerability scanning
+- **UUID-based IDs** - Secure, scalable identifier system
+
+#### Logging & Monitoring
+- **Java Logging** - Multi-level logging with rotation
+- **Custom Log Management** - Script-based log handling
+- **Structured Error Responses** - Consistent error handling
+
+#### Future-Ready Components
+- **Actor System** - Asynchronous message processing
+- **Service Stubs** - Notification, Audit, Email services
+- **Message Bus** - Event-driven communication
+
+## 🚀 Getting Started
 
 ### Prerequisites
 
-- Java 17 or higher
-- Maven 3.6 or higher
-- Open Liberty (will be downloaded automatically by Maven)
-- Docker and Docker Compose (for containerized deployment)
+- **Java 17** or higher
+- **Maven 3.6** or higher
+- **Docker** and Docker Compose (for containerized deployment)
+- **Git** for version control
 
-### Environment Configuration
-
-The application uses multiple configuration files for different contexts:
-
-#### For Local Development
-```bash
-# Copy example files
-cp bootstrap.properties.example bootstrap.properties
-cp server.env.example server.env
-
-# Edit configuration as needed
-```
-
-#### For Docker Deployment
-```bash
-# Copy Docker environment file
-cp docker.env.example .env
-
-# Edit configuration as needed
-```
-
-#### Configuration Files
-- **`bootstrap.properties`** - Liberty server bootstrap configuration
-- **`server.env`** - Liberty server environment variables
-- **`.env`** - Docker Compose environment variables
-- **`META-INF/microprofile-config.properties`** - Application configuration
-
-### Building the Application
+### Quick Start
 
 ```bash
 # Clone the repository
 git clone <repository-url>
 cd tech11_assessment
 
-# Build the application
-mvn clean package
+# Build and run locally
+mvn liberty:dev
+
+# Or use Docker
+docker-compose up --build
 ```
 
-### Running the Application
+### Application URLs
 
-#### Option 1: Local Development
+- **Application**: http://localhost:9080/user-management/api/users
+- **Swagger UI**: http://localhost:9080/openapi/ui
+- **Health Check**: http://localhost:9080/user-management/api/users/health
+
+### Environment Configuration
+
+Copy the example environment file and configure your settings:
+
 ```bash
+cp server.env.example server.env
+```
+
+Edit `server.env` to configure:
+- **Database Settings**: H2 connection parameters
+- **Server Settings**: Liberty server configuration
+- **Logging**: Log levels and rotation settings
+- **Security**: Application security settings
+
+### Building and Running
+
+#### Local Development
+```bash
+# Build the application
+mvn clean package
+
 # Start Open Liberty server
 mvn liberty:dev
 
 # The application will be available at:
-# - Application: http://localhost:9080
+# - Application: http://localhost:9080/user-management/api/users
 # - Swagger UI: http://localhost:9080/openapi/ui
-# - Health Check: http://localhost:9080/api/users/health
+# - Health Check: http://localhost:9080/user-management/api/users/health
 ```
 
-#### Option 2: Docker (Recommended)
+#### Docker Deployment
 ```bash
 # Build and prepare for Docker
 ./build-for-docker.sh
@@ -107,21 +157,11 @@ mvn liberty:dev
 # Run with Docker Compose
 docker-compose up --build
 
-# The application will be available at:
-# - Application: http://localhost:9080/user-management/api/users
-# - Health Check: http://localhost:9080/user-management/api/users/health
-```
-
-#### Option 3: Production Docker
-```bash
-# Build and run production container
-docker-compose -f docker-compose.prod.yml up -d
-
 # View logs
-docker-compose -f docker-compose.prod.yml logs -f
+docker-compose logs -f
 
 # Stop the application
-docker-compose -f docker-compose.prod.yml down
+docker-compose down
 ```
 
 ### Running Tests
@@ -201,52 +241,180 @@ A convenient script is provided to manage logs:
 - **Production**: Consider implementing external log aggregation (ELK stack, Splunk, etc.)
 - **Cleanup**: Use `./logs.sh clear` to clean up old logs when needed
 
-## API Documentation
+## CI/CD Pipeline
+
+### GitHub Actions Workflows
+
+The project includes comprehensive CI/CD pipelines:
+
+#### 1. **Quick PR Validation** (`.github/workflows/pr-validation.yml`)
+- Runs on every pull request
+- Quick feedback (15-minute timeout)
+- Validates: POM, compilation, unit tests, code formatting, dependencies, security scan
+- Comments PR with results
+
+#### 2. **Full CI/CD Pipeline** (`.github/workflows/ci.yml`)
+- Comprehensive validation on PRs and pushes to main/develop
+- Includes: code quality, unit tests, integration tests, security scan, build, Docker build
+- Generates test coverage and security reports
+- Creates artifacts for deployment
+
+#### 3. **Deployment Pipeline** (`.github/workflows/deploy.yml`)
+- Deploys to staging and production environments
+- Triggered by tags (v*) or manual workflow dispatch
+- Creates GitHub releases automatically
+- Includes health checks and notifications
+
+### Branch Protection
+
+The repository uses branch protection rules:
+
+- **Main Branch**: Requires 2 approvals, all CI checks, signed commits
+- **Develop Branch**: Requires 1 approval, core CI checks
+- **Feature Branches**: Basic validation, flexible rules
+- **Hotfix Branches**: Strict validation, 2 approvals required
+
+### Code Ownership
+
+- **Backend Team**: Java code, services, repositories
+- **DevOps Team**: Configuration, Docker, GitHub Actions
+- **Security Team**: Security-related configurations
+- **Docs Team**: Documentation and README files
+
+### Required Secrets
+
+Set up these secrets in your GitHub repository:
+
+```bash
+# For SonarQube analysis
+SONAR_TOKEN=your_sonar_token
+
+# For container registry
+REGISTRY_URL=your_registry_url
+REGISTRY_USERNAME=your_registry_username
+REGISTRY_PASSWORD=your_registry_password
+
+# For deployment
+DEPLOYMENT_KEY=your_deployment_key
+```
+
+### Local Development
+
+To run the same checks locally:
+
+```bash
+# Validate POM
+mvn validate
+
+# Run tests
+mvn test
+
+# Check code formatting
+mvn spotless:check
+
+# Security scan
+mvn org.owasp:dependency-check-maven:check
+
+# Build application
+mvn clean package
+```
+
+### Pull Request Guidelines
+
+1. **Use the PR template** - Fill out all required sections
+2. **Follow conventional commits** - Use proper commit message format
+3. **Ensure all checks pass** - CI/CD pipeline must succeed
+4. **Get required approvals** - Follow code ownership rules
+5. **Update documentation** - Keep README and docs current
+
+## 📚 API Documentation
 
 ### Base URL
 ```
-http://localhost:9080/api/users
+http://localhost:9080/user-management/api/users
+```
+
+### Standardized Response Format
+
+All API responses follow a consistent format:
+
+#### Success Response (Single Record)
+```json
+{
+  "statusCode": 200,
+  "message": "Success (in 15ms)",
+  "data": {
+    "id": "a9b81789284a4551a536992879d08871",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "birthday": "1990-01-01",
+    "createdAt": "2024-01-15T10:30:00",
+    "version": 1
+  }
+}
+```
+
+#### Success Response (List with Pagination)
+```json
+{
+  "statusCode": 200,
+  "message": "Success (in 25ms)",
+  "data": {
+    "data": [
+      {
+        "id": "a9b81789284a4551a536992879d08871",
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "john.doe@example.com",
+        "birthday": "1990-01-01",
+        "createdAt": "2024-01-15T10:30:00",
+        "version": 1
+      }
+    ],
+    "page": 0,
+    "size": 10,
+    "totalElements": 1,
+    "totalPages": 1,
+    "first": true,
+    "last": true
+  }
+}
+```
+
+#### Error Response
+```json
+{
+  "statusCode": 400,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "email",
+      "message": "Email must be a valid email address"
+    },
+    {
+      "field": "password",
+      "message": "Password must be at least 8 characters long"
+    }
+  ]
+}
 ```
 
 ### Endpoints
 
 #### 1. Get All Users (Paginated)
 ```http
-GET /api/users?page=0&size=10
-```
-
-**Response:**
-```json
-{
-  "data": [
-    {
-      "id": 1,
-      "firstName": "John",
-      "lastName": "Doe",
-      "email": "john.doe@example.com",
-      "birthday": "1990-01-01",
-      "createdAt": "2024-01-15T10:30:00",
-      "updatedAt": null,
-      "version": 1
-    }
-  ],
-  "page": 0,
-  "size": 10,
-  "totalElements": 1,
-  "totalPages": 1,
-  "first": true,
-  "last": true
-}
+GET /user-management/api/users?page=0&size=10
 ```
 
 #### 2. Get User by ID
 ```http
-GET /api/users/{id}
+GET /user-management/api/users/{id}
 ```
 
 #### 3. Create New User
 ```http
-POST /api/users
+POST /user-management/api/users
 Content-Type: application/json
 
 {
@@ -260,7 +428,7 @@ Content-Type: application/json
 
 #### 4. Update User
 ```http
-PUT /api/users/{id}
+PUT /user-management/api/users/{id}
 Content-Type: application/json
 
 {
@@ -273,7 +441,7 @@ Content-Type: application/json
 
 #### 5. Reset Password
 ```http
-PATCH /api/users/{id}/password
+PATCH /user-management/api/users/{id}/password
 Content-Type: application/json
 
 {
@@ -283,40 +451,26 @@ Content-Type: application/json
 
 #### 6. Delete User
 ```http
-DELETE /api/users/{id}
+DELETE /user-management/api/users/{id}
 ```
+**Returns**: HTTP 204 No Content
 
-## Docker
+## 🐳 Docker
 
-### Docker Images
+### Docker Configuration
 
-The application provides two Docker configurations:
+The application provides Docker support for easy deployment:
 
-#### Development Docker (`Dockerfile`)
+#### Development Docker
 - Multi-stage build for faster development cycles
 - Includes all development tools and debugging capabilities
 - Uses `docker-compose.yml` for orchestration
 
-#### Production Docker (`Dockerfile.prod`)
-- Optimized for production deployment
-- Runs as non-root user for security
-- Includes resource limits and security hardening
-- Uses `docker-compose.prod.yml` for orchestration
-
 ### Docker Commands
 
 ```bash
-# Build development image
-docker build -t user-management-api .
-
-# Build production image
-docker build -f Dockerfile.prod -t user-management-api:prod .
-
-# Run development container
-docker-compose up -d
-
-# Run production container
-docker-compose -f docker-compose.prod.yml up -d
+# Build and run development container
+docker-compose up --build
 
 # View logs
 docker-compose logs -f
@@ -333,11 +487,10 @@ docker-compose down --rmi all --volumes --remove-orphans
 - **Multi-stage builds** for optimized image sizes
 - **Health checks** for container monitoring
 - **Volume mounts** for logs and configuration
-- **Resource limits** for production deployments
-- **Security hardening** with non-root user execution
 - **Network isolation** with custom Docker networks
+- **Environment configuration** via `server.env`
 
-## Testing
+## 🧪 Testing
 
 ### Unit Tests
 Unit tests cover the service layer with mocked dependencies:
@@ -357,18 +510,32 @@ mvn verify
 A comprehensive Postman collection is included for manual testing:
 
 1. Import `User_Management_API.postman_collection.json` into Postman
-2. Set the `baseUrl` variable to `http://localhost:9080`
+2. Set the `baseUrl` variable to `http://localhost:9080/user-management`
 3. Run the test scenarios
 
-## Project Structure
+### Test Coverage
+- **Service Layer**: Comprehensive unit tests with mocked dependencies
+- **Validation**: Tests for all validation scenarios
+- **Error Handling**: Tests for exception scenarios
+- **UUID Handling**: Tests for UUID conversion and validation
+
+## 📁 Project Structure
 
 ```
 src/
 ├── main/
 │   ├── java/
 │   │   └── com/tech11/usermanagement/
-│   │       ├── entity/
-│   │       │   └── User.java
+│   │       ├── actors/
+│   │       │   ├── MessageBus.java
+│   │       │   ├── SystemActor.java
+│   │       │   ├── UserActor.java
+│   │       │   └── messages/
+│   │       │       ├── SystemMessages.java
+│   │       │       └── UserMessages.java
+│   │       ├── config/
+│   │       │   ├── GlobalExceptionMapper.java
+│   │       │   └── ValidationExceptionMapper.java
 │   │       ├── data/
 │   │       │   ├── ApiResponse.java
 │   │       │   ├── PaginatedResponse.java
@@ -379,47 +546,50 @@ src/
 │   │       │   │   ├── UpdateUserRequest.java
 │   │       │   │   └── ResetPasswordRequest.java
 │   │       │   └── response/
+│   │       │       ├── ErrorResponse.java
 │   │       │       └── UserResponse.java
+│   │       ├── entity/
+│   │       │   └── User.java
 │   │       ├── repository/
 │   │       │   └── UserRepository.java
-│   │       ├── service/
-│   │       │   └── UserService.java
 │   │       ├── resource/
 │   │       │   └── UserResource.java
+│   │       ├── services/
+│   │       │   ├── AuditService.java
+│   │       │   ├── EmailService.java
+│   │       │   ├── NotificationService.java
+│   │       │   └── UserService.java
 │   │       ├── validators/
 │   │       │   ├── CreateUserRequestValidator.java
-│   │       │   ├── UpdateUserRequestValidator.java
-│   │       │   └── ResetPasswordRequestValidator.java
+│   │       │   ├── ResetPasswordRequestValidator.java
+│   │       │   └── UpdateUserRequestValidator.java
 │   │       └── UserManagementApplication.java
-│   ├── resources/
-│   │   └── META-INF/
-│   │       ├── persistence.xml
-│   │       └── microprofile-config.properties
 │   ├── liberty/
 │   │   └── config/
 │   │       └── server.xml
+│   ├── resources/
+│   │   └── META-INF/
+│   │       ├── microprofile-config.properties
+│   │       └── persistence.xml
 │   └── webapp/
 │       └── WEB-INF/
 │           └── beans.xml
 ├── test/
-│   ├── java/
-│   │   └── com/tech11/usermanagement/
-│   │       ├── services/
-│   │       │   └── UserServiceTest.java
-│   │       └── resource/
-│   │           └── UserResourceIntegrationTest.java
-│   └── resources/
-│       └── arquillian.xml
+│   └── java/
+│       └── com/tech11/usermanagement/
+│           └── services/
+│               └── UserServiceTest.java
 ```
 
-### Key Changes from Original Structure:
+### Key Architectural Components:
 
-- **Removed DAO layer** - Replaced with JPA Repository pattern
-- **Restructured DTOs** - Separated into `request/` and `response/` packages
-- **Added Data layer** - `ApiResponse` and `PaginatedResponse` moved to `data/` package
-- **Added Validators** - Custom validation classes for request DTOs
-- **Added Configuration** - `microprofile-config.properties` for application settings
-- **Updated Test structure** - Service tests moved to `services/` package
+- **🎭 Actor System**: Asynchronous message processing with `UserActor` and `SystemActor`
+- **📨 Message Bus**: Event-driven communication between components
+- **🛡️ Validation**: Multi-layer validation with custom validators
+- **📊 Response Standardization**: Consistent API response format with `ApiResponse`
+- **🔍 Error Handling**: Structured error responses with `ErrorResponse`
+- **📋 Service Layer**: Core business logic with service stubs for future expansion
+- **🗄️ Data Layer**: JPA repository pattern with UUID-based entities
 
 ## 🔧 Configuration
 
@@ -427,34 +597,48 @@ src/
 The server is configured in `src/main/liberty/config/server.xml` with:
 
 - Jakarta EE 10 features enabled
-- H2 in-memory database
-- JPA persistence unit
+- H2 in-memory database with automatic schema creation
+- JPA persistence unit with EclipseLink
 - HTTP endpoints on ports 9080/9443
+- Logging configuration with rotation
 
 ### JPA Configuration
 Database configuration is in `src/main/resources/META-INF/persistence.xml`:
 
-- H2 in-memory database
-- Hibernate as JPA provider
+- H2 in-memory database with UUID support
+- EclipseLink as JPA provider
 - Automatic schema generation
+- UUID-based ID generation strategy
 
-### Technical Services Implemented
+### Application Configuration
+Application settings in `src/main/resources/META-INF/microprofile-config.properties`:
 
-1. **User Registration Service** - Complete user creation with validation
-2. **User Profile Management** - Update user information
-3. **Password Reset Service** - Secure password reset functionality
-4. **User Listing Service** - Paginated user listing
-5. **User Account Disabling Service** - Safe user account disabling 
+- Database connection parameters
+- Logging levels
+- Application-specific settings
 
-### Additional Services (Stubs)
+## 🎯 Implemented Features
 
-The following services could be implemented for a complete user management system:
+### Core User Management
+1. **User Registration** - Complete user creation with comprehensive validation
+2. **User Profile Management** - Update user information with field-level tracking
+3. **Password Reset** - Secure password reset functionality
+4. **User Listing** - Paginated user listing with sorting
+5. **User Deletion** - Safe user account removal (HTTP 204)
 
-1. **Email Verification Service** - Email confirmation for new accounts
-2. **Account Lockout Service** - Security for failed login attempts
-3. **User Activity Logging** - Audit trail for user actions
-4. **Bulk User Operations** - Import/export functionality
-5. **User Search Service** - Advanced search and filtering
+### Advanced Features
+1. **UUID-based IDs** - Secure, scalable identifier system
+2. **Standardized API Responses** - Consistent JSON format with processing time
+3. **Comprehensive Validation** - Bean validation + custom business validation
+4. **Detailed Error Handling** - Structured error responses with field-level messages
+5. **Multi-level Logging** - INFO, WARNING, SEVERE levels with rotation
+6. **Actor System** - Asynchronous message processing for scalability
+
+### Service Stubs (Ready for Implementation)
+1. **NotificationService** - Email/SMS notifications
+2. **AuditService** - User activity logging and audit trails
+3. **EmailService** - Email delivery and management
+4. **Message Bus** - Event-driven communication between services
 
 ## 🚀 Deployment
 
@@ -469,16 +653,26 @@ mvn clean package
 mvn liberty:create liberty:install-feature liberty:deploy liberty:start
 ```
 
-## 📝 Code Quality
+### Docker Deployment
+```bash
+./build-for-docker.sh
+docker-compose up --build
+```
 
-This project demonstrates:
+## 📝 Code Quality & Best Practices
 
-- **Clean Architecture**: Separation of concerns
-- **SOLID Principles**: Single responsibility, dependency injection
-- **Test-Driven Development**: Comprehensive test coverage
-- **Documentation**: Inline documentation and API docs
-- **Error Handling**: Proper exception handling
-- **Validation**: Input validation at multiple layers
+This project demonstrates enterprise-grade development practices:
+
+- **🏗️ Clean Architecture**: Clear separation of concerns with layered design
+- **🔒 SOLID Principles**: Single responsibility, dependency injection, interface segregation
+- **🧪 Test-Driven Development**: Comprehensive unit test coverage
+- **📚 Documentation**: Inline documentation and interactive API docs
+- **🛡️ Error Handling**: Proper exception handling with structured responses
+- **✅ Validation**: Multi-layer validation (Bean, Business, Custom)
+- **📋 Logging**: Comprehensive logging with proper levels and rotation
+- **🔐 Security**: UUID-based IDs, input validation, secure configurations
+- **⚡ Performance**: Asynchronous processing, efficient database queries
+- **🐳 Containerization**: Docker support for easy deployment
 
 ## 📄 License
 

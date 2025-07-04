@@ -6,8 +6,8 @@ import com.tech11.usermanagement.dto.request.CreateUserRequest;
 import com.tech11.usermanagement.dto.request.ResetPasswordRequest;
 import com.tech11.usermanagement.dto.request.UpdateUserRequest;
 import com.tech11.usermanagement.dto.response.UserResponse;
+import com.tech11.usermanagement.services.UserService;
 import com.tech11.usermanagement.dto.response.ErrorResponse;
-import com.tech11.usermanagement.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

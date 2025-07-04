@@ -1,6 +1,6 @@
 package com.tech11.usermanagement.services;
 import com.tech11.usermanagement.repository.UserRepository;
-import com.tech11.usermanagement.service.UserService;
+import com.tech11.usermanagement.services.UserService;
 import com.tech11.usermanagement.validators.CreateUserRequestValidator;
 import com.tech11.usermanagement.validators.UpdateUserRequestValidator;
 import com.tech11.usermanagement.validators.ResetPasswordRequestValidator;

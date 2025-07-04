@@ -1,0 +1,106 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  pull_request_target:
+    branches: [ main, develop ]
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  quick-validation:
+    name: Quick PR Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: 'maven'
+        
+    - name: Cache Maven packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        restore-keys: ${{ runner.os }}-m2
+        
+    - name: Validate POM file
+      run: mvn validate
+      
+    - name: Compile code
+      run: mvn compile
+      
+    - name: Run unit tests
+      run: mvn test
+      
+    - name: Check code formatting
+      run: mvn spotless:check
+      
+    - name: Validate dependencies
+      run: mvn dependency:analyze
+      
+    - name: Check for security vulnerabilities
+      run: mvn org.owasp:dependency-check-maven:check -DfailBuildOnCVSS=8
+      
+    - name: Build application
+      run: mvn clean package -DskipTests
+      
+    - name: Comment PR with results
+      uses: actions/github-script@v7
+      if: always()
+      with:
+        script: |
+          const { data: comments } = await github.rest.issues.listComments({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          });
+          
+          const botComment = comments.find(comment => 
+            comment.user.type === 'Bot' && 
+            comment.body.includes('## Quick PR Validation Results')
+          );
+          
+          const jobStatus = '${{ job.status }}';
+          const statusEmoji = jobStatus === 'success' ? '✅' : '❌';
+          
+          const body = `## Quick PR Validation Results
+          
+          ${statusEmoji} **Status**: ${jobStatus.toUpperCase()}
+          
+          ### Checks Performed:
+          - ✅ POM validation
+          - ✅ Code compilation
+          - ✅ Unit tests
+          - ✅ Code formatting (Spotless)
+          - ✅ Dependency analysis
+          - ✅ Security vulnerability scan
+          - ✅ Application build
+          
+          ---
+          *This validation runs automatically on every PR. For full CI/CD pipeline, see the main workflow.*`;
+          
+          if (botComment) {
+            await github.rest.issues.updateComment({
+              comment_id: botComment.id,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          } else {
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+          } 

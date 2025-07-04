@@ -1,0 +1,55 @@
+# Global code owners
+* @tech11-admin
+
+# Backend Java code
+*.java @tech11-backend-team
+
+# Configuration files
+*.xml @tech11-devops-team
+*.yml @tech11-devops-team
+*.yaml @tech11-devops-team
+*.properties @tech11-devops-team
+
+# Documentation
+*.md @tech11-docs-team
+docs/ @tech11-docs-team
+
+# GitHub Actions workflows
+.github/workflows/ @tech11-devops-team
+
+# Docker files
+Dockerfile @tech11-devops-team
+docker-compose*.yml @tech11-devops-team
+
+# Database scripts
+*.sql @tech11-backend-team
+
+# Test files
+src/test/ @tech11-backend-team
+*.test.* @tech11-backend-team
+
+# API documentation
+src/main/java/com/tech11/usermanagement/resource/ @tech11-backend-team
+src/main/java/com/tech11/usermanagement/dto/ @tech11-backend-team
+
+# Service layer
+src/main/java/com/tech11/usermanagement/service/ @tech11-backend-team
+src/main/java/com/tech11/usermanagement/services/ @tech11-backend-team
+
+# Data access layer
+src/main/java/com/tech11/usermanagement/repository/ @tech11-backend-team
+src/main/java/com/tech11/usermanagement/entity/ @tech11-backend-team
+
+# Validation
+src/main/java/com/tech11/usermanagement/validators/ @tech11-backend-team
+
+# Configuration
+src/main/java/com/tech11/usermanagement/config/ @tech11-backend-team
+
+# Actors and Messages
+src/main/java/com/tech11/usermanagement/actors/ @tech11-backend-team
+src/main/java/com/tech11/usermanagement/messages/ @tech11-backend-team
+
+# Security-related files
+src/main/java/com/tech11/usermanagement/config/GlobalExceptionMapper.java @tech11-security-team
+src/main/java/com/tech11/usermanagement/config/ValidationExceptionMapper.java @tech11-security-team 

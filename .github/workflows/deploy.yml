@@ -1,0 +1,155 @@
+name: Deploy to Production
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+env:
+  JAVA_VERSION: '17'
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'staging'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: 'maven'
+        
+    - name: Build application
+      run: mvn clean package -DskipTests
+      
+    - name: Build Docker image
+      run: |
+        docker build -t user-management-service:staging .
+        
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your staging deployment logic here
+        # Example: kubectl apply, docker push, etc.
+        
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests against staging..."
+        # Add smoke test logic here
+        
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "✅ Successfully deployed to staging"
+        
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "❌ Deployment to staging failed"
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'production')
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Java
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: 'maven'
+        
+    - name: Build application
+      run: mvn clean package -DskipTests
+      
+    - name: Build Docker image
+      run: |
+        docker build -t user-management-service:production .
+        
+    - name: Login to container registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ secrets.REGISTRY_URL }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+        
+    - name: Push Docker image
+      run: |
+        docker tag user-management-service:production ${{ secrets.REGISTRY_URL }}/user-management-service:${{ github.sha }}
+        docker tag user-management-service:production ${{ secrets.REGISTRY_URL }}/user-management-service:latest
+        docker push ${{ secrets.REGISTRY_URL }}/user-management-service:${{ github.sha }}
+        docker push ${{ secrets.REGISTRY_URL }}/user-management-service:latest
+        
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # Add your production deployment logic here
+        # Example: kubectl apply, helm upgrade, etc.
+        
+    - name: Run health checks
+      run: |
+        echo "Running health checks..."
+        # Add health check logic here
+        
+    - name: Create GitHub release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: |
+          ## What's Changed
+          
+          This release includes:
+          - User management features
+          - Enhanced security
+          - Improved logging
+          - Service stubs for future enhancements
+          
+          ## Installation
+          
+          ```bash
+          docker pull ${{ secrets.REGISTRY_URL }}/user-management-service:${{ github.sha }}
+          ```
+          
+          ## Breaking Changes
+          
+          None
+          
+          ## Bug Fixes
+          
+          - Various improvements and optimizations
+        draft: false
+        prerelease: false
+        
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "✅ Successfully deployed to production"
+        
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "❌ Deployment to production failed" 

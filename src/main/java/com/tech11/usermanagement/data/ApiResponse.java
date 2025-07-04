@@ -28,11 +28,18 @@ public class ApiResponse<T> {
     public ApiResponse() {
     }
 
-    // Constructor with all fields
+    // Constructor with all fields (for paginated responses)
     public ApiResponse(int statusCode, String message, T data, Long processingTimeMs) {
         this.statusCode = statusCode;
         this.message = message;
         this.data = new DataWrapper<>(data, processingTimeMs);
+    }
+
+    // Constructor for single record responses (no pagination)
+    public ApiResponse(int statusCode, String message, T data) {
+        this.statusCode = statusCode;
+        this.message = message;
+        this.data = new DataWrapper<>(data);
     }
 
     // Static factory methods for common responses
@@ -111,6 +118,12 @@ public class ApiResponse<T> {
             this.data = data;
             // For single items, create a simple pageData
             this.pageData = new PageData(1, 1, 1, 1, 1);
+        }
+
+        public DataWrapper(T data) {
+            this.data = data;
+            // For single records, no pagination needed
+            this.pageData = null;
         }
 
         public DataWrapper(T data, PageData pageData) {

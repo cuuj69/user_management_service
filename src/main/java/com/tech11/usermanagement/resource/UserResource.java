@@ -137,7 +137,13 @@ public class UserResource {
         UserResponse user = userService.getUserById(id);
         long processingTime = System.currentTimeMillis() - startTime;
         
-        ApiResponse<UserResponse> response = ApiResponse.success(user, processingTime);
+        // For single record, return the data directly without pagination wrapper
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+            200, 
+            "Success (in " + processingTime + "ms)", 
+            user
+        );
+        
         return Response.ok(response).build();
     }
 
@@ -168,7 +174,13 @@ public class UserResource {
         UserResponse createdUser = userService.createUser(request);
         long processingTime = System.currentTimeMillis() - startTime;
         
-        ApiResponse<UserResponse> response = ApiResponse.created(createdUser, processingTime);
+        // For single record, return the data directly without pagination wrapper
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+            201, 
+            "Success (in " + processingTime + "ms)", 
+            createdUser
+        );
+        
         return Response.status(Response.Status.CREATED)
                 .entity(response)
                 .build();
@@ -208,7 +220,13 @@ public class UserResource {
         UserResponse updatedUser = userService.updateUser(id, request);
         long processingTime = System.currentTimeMillis() - startTime;
         
-        ApiResponse<UserResponse> response = ApiResponse.success(updatedUser, processingTime);
+        // For single record, return the data directly without pagination wrapper
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+            200, 
+            "Success (in " + processingTime + "ms)", 
+            updatedUser
+        );
+        
         return Response.ok(response).build();
     }
 
@@ -246,7 +264,13 @@ public class UserResource {
         UserResponse updatedUser = userService.resetPassword(id, request);
         long processingTime = System.currentTimeMillis() - startTime;
         
-        ApiResponse<UserResponse> response = ApiResponse.success(updatedUser, processingTime);
+        // For single record, return the data directly without pagination wrapper
+        ApiResponse<UserResponse> response = new ApiResponse<>(
+            200, 
+            "Success (in " + processingTime + "ms)", 
+            updatedUser
+        );
+        
         return Response.ok(response).build();
     }
 
@@ -274,9 +298,7 @@ public class UserResource {
         userService.deleteUser(id);
         long processingTime = System.currentTimeMillis() - startTime;
         
-        ApiResponse<Void> response = ApiResponse.noContent();
-        return Response.status(Response.Status.NO_CONTENT)
-                .entity(response)
-                .build();
+        // For delete operation, return 204 No Content as per REST standards
+        return Response.noContent().build();
     }
 } 
